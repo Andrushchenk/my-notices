@@ -143,6 +143,11 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 .btn{flex:1;padding:14px;border-radius:14px;font-size:16px;font-weight:600;background:var(--panel2);text-align:center}
 .btn.main{background:var(--accent);color:var(--on-accent)}
 .btn.danger{color:var(--danger)}
+.pbtn,.pbtns .btn{display:flex;align-items:center;justify-content:center;gap:8px}
+.pbtn{width:100%;margin-top:2px}
+.pbtn .icon,.pbtns .icon{width:20px;height:20px}
+.pbtns{display:flex;gap:10px}
+.btn:active{filter:brightness(.9)}
 .ib.on.bell .icon{fill:none}
 
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:11px 14px 11px 16px;border-radius:14px;display:flex;align-items:center;gap:14px;z-index:40;opacity:0;pointer-events:none;transition:.2s;font-size:15px;width:max-content;max-width:calc(100vw - 32px)}
@@ -867,9 +872,9 @@ function settingsSheet() {
     ${deleted.length ? `<h4>Нещодавно видалені</h4>${deleted.slice(0, 15).map(n => `<button class="row" data-restore="${n.id}"><svg class="icon"><use href="#i-restore"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.title.trim() || n.body.trim().split('\n')[0] || 'Без назви')}</span></button>`).join('')}<div class="hint">Видалені зберігаються 30 днів. Натисніть, щоб повернути.</div>` : ''}
     <h4>Сповіщення</h4>
     ${pushCan() && Notification.permission === 'granted'
-      ? '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>🔔 Увімкнено · оновити</button><button class="row" data-a="push-test"><svg class="icon"><use href="#i-share"/></svg>Надіслати тестове</button>'
-      : '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>Увімкнути сповіщення</button>'}
-    <div class="hint" id="pushHint">${pushProblem() || (pushCan() && Notification.permission === 'granted' ? 'Нагадування приходитимуть на цей пристрій.' : 'Потрібні, щоб приходили нагадування з нотаток.')}</div>
+      ? '<div class="pbtns"><button class="btn" data-a="push-test"><svg class="icon"><use href="#i-bell"/></svg>Надіслати тестове</button><button class="btn" data-a="push-on">Оновити</button></div>'
+      : '<button class="btn main pbtn" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>Увімкнути сповіщення</button>'}
+    <div class="hint" id="pushHint">${pushProblem() || (pushCan() && Notification.permission === 'granted' ? '🔔 Увімкнено — нагадування приходитимуть на цей пристрій.' : 'Потрібні, щоб приходили нагадування з нотаток.')}</div>
     <h4>Дані</h4>
     <button class="row" data-a="export"><svg class="icon"><use href="#i-down"/></svg>Експорт (JSON)</button>
     <button class="row" data-a="import"><svg class="icon"><use href="#i-up"/></svg>Імпорт (JSON)</button>

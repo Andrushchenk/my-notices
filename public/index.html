@@ -66,8 +66,12 @@ main{padding:6px 12px calc(var(--safe-b) + 110px)}
 .card h3{margin:0 0 4px;font-size:16px;line-height:1.3;word-wrap:break-word}
 .card .body{font-size:14px;color:color-mix(in srgb,var(--ink) 82%,var(--muted));white-space:pre-wrap;word-wrap:break-word;max-height:16.5em;overflow:hidden}
 .card .more{font-size:12px;color:var(--muted);margin-top:2px}
-.card .meta{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--muted)}
+.card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--muted)}
 .card .meta .pin{width:14px;height:14px;color:var(--accent)}
+.card .meta .rem{display:inline-flex;align-items:center;gap:3px;padding:1px 7px 1px 5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--ink);font-size:11.5px;font-weight:600;white-space:nowrap}
+.card .meta .rem.past{background:var(--panel2);color:var(--muted);text-decoration:line-through}
+.card .meta .rem svg{width:12px;height:12px;color:var(--accent)}
+.card .meta .grow{flex:1}
 .ck{display:flex;gap:7px;align-items:flex-start;padding:2px 0}
 .ck i{flex:none;width:17px;height:17px;margin-top:1px;border:2px solid var(--muted);border-radius:5px;display:grid;place-items:center;font-style:normal}
 .ck.done{color:var(--muted);text-decoration:line-through}
@@ -96,8 +100,9 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 .ebody{width:100%;border:0;background:none;outline:none;resize:none;font-size:17px;line-height:1.55;min-height:50vh;padding:4px 0;overflow:hidden}
 .etitle::placeholder,.ebody::placeholder{color:var(--muted)}
 .efoot{display:flex;align-items:center;gap:4px;padding:6px 10px calc(var(--safe-b) + 6px);border-top:1px solid var(--line);background:inherit}
+.editor.kb .efoot{padding-bottom:6px}
 .efoot .when{flex:1;text-align:center;font-size:12px;color:var(--muted)}
-.tool{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;font-size:14px;color:var(--muted)}
+.tool{display:flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
 .tool:active{background:var(--panel2)}
 
 /* меню, вікна */
@@ -122,8 +127,25 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 .th .sw{display:flex;gap:4px;margin-bottom:8px}
 .th .sw span{width:18px;height:18px;border-radius:50%}
 .hint{font-size:13px;color:var(--muted);padding:8px 6px 0}
+.hint.warn{color:var(--danger)}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px;border-radius:16px;background:var(--panel2);font-size:16px;font-weight:600;text-align:left}
+.big .icon{width:28px;height:28px;color:var(--accent)}
+.big small{font-weight:400;font-size:13px;color:var(--muted);margin-top:-6px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}
+.quick button{padding:9px 13px;border-radius:12px;background:var(--panel2);font-size:14px}
+.quick button.on{background:var(--accent);color:var(--on-accent);font-weight:600}
+.dt{width:100%;font-size:17px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);-webkit-appearance:none;appearance:none;min-height:50px}
+.seg{display:flex;background:var(--panel2);border-radius:12px;padding:3px}
+.seg button{flex:1;padding:9px 4px;border-radius:10px;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.btns{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;padding:14px;border-radius:14px;font-size:16px;font-weight:600;background:var(--panel2);text-align:center}
+.btn.main{background:var(--accent);color:var(--on-accent)}
+.btn.danger{color:var(--danger)}
+.ib.on.bell .icon{fill:none}
 
-.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:11px 14px 11px 16px;border-radius:14px;display:flex;align-items:center;gap:14px;z-index:40;opacity:0;pointer-events:none;transition:.2s;font-size:15px;max-width:calc(100% - 32px)}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:11px 14px 11px 16px;border-radius:14px;display:flex;align-items:center;gap:14px;z-index:40;opacity:0;pointer-events:none;transition:.2s;font-size:15px;width:max-content;max-width:calc(100vw - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast button{color:var(--accent);font-weight:700;filter:brightness(.85)}
 [data-theme=light] .toast button{filter:none;color:#ffd04d}
@@ -150,6 +172,9 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
   <symbol id="i-dup" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/><path d="M14.5 11.5v6M11.5 14.5h6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><rect x="3.5" y="4" width="5" height="5" rx="1.2"/><path d="m4.8 6.6 1.1 1 1.8-2"/><rect x="3.5" y="14" width="5" height="5" rx="1.2"/><path d="M12 6.5h8.5M12 16.5h8.5"/></symbol>
   <symbol id="i-restore" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
 </svg>
 
@@ -177,6 +202,7 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
   <div class="ebar">
     <button class="ib" id="eBack" aria-label="Назад"><svg class="icon"><use href="#i-back"/></svg></button>
     <div class="sp"></div>
+    <button class="ib bell" id="eBell" aria-label="Нагадування"><svg class="icon"><use href="#i-bell"/></svg></button>
     <button class="ib" id="ePin" aria-label="Закріпити"><svg class="icon"><use href="#i-pin"/></svg></button>
     <button class="ib" id="eColor" aria-label="Колір"><svg class="icon"><use href="#i-palette"/></svg></button>
     <button class="ib" id="eMore" aria-label="Ще"><svg class="icon"><use href="#i-dots"/></svg></button>
@@ -336,11 +362,12 @@ function card(n) {
   const p = preview(n);
   const checks = n.body.match(/^\s*[☐☑]/gm) || [];
   const done = (n.body.match(/^\s*☑/gm) || []).length;
+  const rl = remindLabel(n);
   return `<article class="card" data-id="${n.id}"${n.color ? ` data-c="${n.color}"` : ''}>
     ${n.title.trim() ? `<h3>${hl(n.title)}</h3>` : ''}
     ${p.html ? `<div class="body">${p.html}</div>` : ''}
     ${p.more ? `<div class="more">+ ще ${p.more} ${plural(p.more, 'рядок', 'рядки', 'рядків')}</div>` : ''}
-    <div class="meta">${n.pinned ? '<svg class="icon pin"><use href="#i-pin"/></svg>' : ''}${checks.length ? `<span>${done}/${checks.length} ✓</span>·` : ''}<span>${fmtDate(n.updated)}</span></div>
+    <div class="meta">${n.pinned ? '<svg class="icon pin"><use href="#i-pin"/></svg>' : ''}${checks.length ? `<span>${done}/${checks.length} ✓</span>` : ''}${rl ? `<span class="rem${rl.past ? ' past' : ''}"><svg class="icon"><use href="#i-bell"/></svg>${rl.text}</span>` : `<span>${fmtDate(n.updated)}</span>`}</div>
   </article>`;
 }
 
@@ -349,10 +376,28 @@ function plural(n, a, b, c) {
   return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c;
 }
 
+const WEEK = ['щонеділі', 'щопонеділка', 'щовівторка', 'щосереди', 'щочетверга', "щоп'ятниці", 'щосуботи'];
+const hm = d => d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+function remindLabel(n) {
+  if (!n.remind) return null;
+  const d = new Date(n.remind);
+  if (n.repeat === 'day') return { text: 'щодня ' + hm(d), past: false };
+  if (n.repeat === 'week') return { text: WEEK[d.getDay()] + ' ' + hm(d), past: false };
+  const now = new Date(), day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(d) - day(now)) / 864e5);
+  let date;
+  if (diff === 0) date = 'сьогодні';
+  else if (diff === 1) date = 'завтра';
+  else if (diff === -1) date = 'вчора';
+  else date = d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short', ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}) });
+  return { text: date + ' ' + hm(d), past: n.remind < Date.now() };
+}
+
 function renderChips() {
   const all = alive();
   const used = new Set(all.map(n => n.color).filter(Boolean));
   const chips = [['all', 'Усі'], ['pinned', 'Закріплені'], ['lists', 'Списки']];
+  if (all.some(n => n.remind)) chips.push(['remind', 'З нагадуванням']);
   let html = chips.map(([k, t]) => `<button class="chip${filter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
   html += COLORS.filter(([c]) => c && used.has(c)).map(([c, t]) =>
     `<button class="chip${filter === c ? ' on' : ''}" data-f="${c}" aria-label="${t}"><span class="dot" data-c="${c}" style="border:0"></span></button>`).join('');
@@ -362,10 +407,12 @@ function renderChips() {
 function render() {
   let notes = alive();
   $('#count').textContent = notes.length ? `${notes.length} ${plural(notes.length, 'нотатка', 'нотатки', 'нотаток')}` : '';
-  if (filter !== 'all' && filter !== 'pinned' && filter !== 'lists' && !notes.some(n => n.color === filter)) filter = 'all';
+  if (!['all', 'pinned', 'lists', 'remind'].includes(filter) && !notes.some(n => n.color === filter)) filter = 'all';
+  if (filter === 'remind' && !notes.some(n => n.remind)) filter = 'all';
   renderChips();
   if (filter === 'pinned') notes = notes.filter(n => n.pinned);
   else if (filter === 'lists') notes = notes.filter(n => /^\s*[☐☑]/m.test(n.body));
+  else if (filter === 'remind') notes = notes.filter(n => n.remind);
   else if (filter !== 'all') notes = notes.filter(n => n.color === filter);
   if (query) {
     const q = query.toLowerCase();
@@ -426,21 +473,26 @@ function fillEditor(n) {
 function paintEditor(n) {
   if (n.color) ed.dataset.c = n.color; else delete ed.dataset.c;
   $('#ePin').classList.toggle('on', !!n.pinned);
-  $('#eWhen').textContent = isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
+  $('#eBell').classList.toggle('on', !!n.remind);
+  const rl = remindLabel(n);
+  $('#eWhen').textContent = rl ? '🔔 ' + rl.text : isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
 }
 
 function openEditor(id, preset) {
   isNew = !id;
   if (!id) {
     id = uid();
-    data.notes[id] = { id, title: '', body: '', pinned: filter === 'pinned', color: COLORS.some(c => c[0] === filter) ? filter : '', deleted: false, created: Date.now(), updated: Date.now(), ...preset };
+    data.notes[id] = { id, title: '', body: '', pinned: filter === 'pinned', color: COLORS.some(c => c[0] === filter && c[0]) ? filter : '', remind: 0, repeat: '', deleted: false, created: Date.now(), updated: Date.now(), ...preset };
   }
   editId = id;
   fillEditor(data.notes[id]);
   ed.classList.add('open'); ed.setAttribute('aria-hidden', 'false');
   $('#eScroll').scrollTop = 0;
   if (location.hash !== '#note') history.pushState({ note: 1 }, '', '#note');
-  if (isNew) setTimeout(() => (preset?.body ? eBody : eBody).focus(), 50);
+  if (isNew) {     // фокус одразу, у тому самому натисканні, — інакше iPhone не відкриє клавіатуру
+    eBody.focus({ preventScroll: true });
+    eBody.setSelectionRange(eBody.value.length, eBody.value.length);
+  }
 }
 
 function commit() {
@@ -594,7 +646,133 @@ function removeNote(id, msg) {
   toast(msg, 'Повернути', () => { change('note', { ...data.notes[id], deleted: false }); render() });
 }
 
-$('#add').addEventListener('click', () => openEditor(null));
+$('#add').addEventListener('click', () => {
+  openSheet(`<div class="grab"></div><h2>Створити</h2><div class="pick">
+    <button class="big" data-new="note"><svg class="icon"><use href="#i-note"/></svg>Нотатка<small>Звичайний текст</small></button>
+    <button class="big" data-new="list"><svg class="icon"><use href="#i-list"/></svg>Список<small>Пункти з галочками</small></button>
+  </div><div class="hint">Нагадування можна додати в будь-яку нотатку — дзвіночок угорі.</div>`);
+  $('#sheet').onclick = e => {
+    const b = e.target.closest('[data-new]'); if (!b) return;
+    closeSheet();
+    openEditor(null, b.dataset.new === 'list' ? { body: BOX + ' ' } : undefined);
+  };
+});
+
+/* ---------- нагадування ---------- */
+const pushCan = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const u8 = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); const b = atob(s + '='.repeat((4 - s.length % 4) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)) };
+
+async function subscribe(ask) {
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    if (!ask) return false;
+    const key = await (await fetch('/api/push/key', { cache: 'no-store' })).text();
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(key.trim()) });
+  }
+  const r = await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub.toJSON()) });
+  return r.ok;
+}
+
+function pushProblem() {
+  if (!pushCan()) return standalone ? 'Цей браузер не підтримує сповіщення.'
+    : 'Сповіщення приходять, лише коли Нотатки відкриті з іконки на екрані «Додому» (Safari → Поділитися → На екран «Додому»).';
+  if (Notification.permission === 'denied') return 'Сповіщення заборонені: увімкніть їх для «Нотаток» у Параметрах iPhone → Сповіщення.';
+  return '';
+}
+
+// Запитати дозвіл треба одразу в натисканні, до будь-яких await
+function enablePush() {
+  if (!pushCan() || Notification.permission === 'denied') return Promise.resolve(false);
+  const perm = Notification.permission === 'granted' ? Promise.resolve('granted') : Notification.requestPermission();
+  return perm.then(p => p === 'granted' ? subscribe(true) : false).catch(() => false);
+}
+
+const pad = x => String(x).padStart(2, '0');
+const toInput = ms => { const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}` };
+
+function quickTimes() {
+  const now = new Date(), h = now.getHours();
+  const at = (days, hh) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + days, hh, 0).getTime();
+  const list = [['Через годину', Math.ceil((Date.now() + 3600e3) / 300e3) * 300e3]];
+  if (h < 17) list.push(['Сьогодні о 18:00', at(0, 18)]);
+  else if (h < 20) list.push(['Сьогодні о 21:00', at(0, 21)]);
+  list.push(['Завтра о 9:00', at(1, 9)]);
+  list.push(['Завтра о 18:00', at(1, 18)]);
+  const toMon = ((8 - now.getDay()) % 7) || 7;
+  if (toMon > 1) list.push(['У понеділок о 9:00', at(toMon, 9)]);
+  return list;
+}
+
+$('#eBell').addEventListener('click', () => {
+  commit();
+  const n = data.notes[editId];
+  let when = n.remind || 0, repeat = n.repeat || '';
+  const qt = quickTimes();
+  openSheet(`<div class="grab"></div><h2>Нагадування</h2>
+    <div class="quick" id="rQuick">${qt.map(([t, ms]) => `<button data-ms="${ms}">${t}</button>`).join('')}</div>
+    <h4>Або точний час</h4>
+    <input class="dt" type="datetime-local" id="rDt">
+    <h4>Повторювати</h4>
+    <div class="seg" id="rRep"><button data-r="">Один раз</button><button data-r="day">Щодня</button><button data-r="week">Щотижня</button></div>
+    <div class="hint" id="rHint"></div>
+    <div class="btns">${n.remind ? '<button class="btn danger" id="rOff">Прибрати</button>' : ''}<button class="btn main" id="rSave">Нагадати</button></div>`);
+  const dt = $('#rDt'), hint = $('#rHint');
+  const paint = () => {
+    dt.value = when ? toInput(when) : '';
+    document.querySelectorAll('#rQuick button').forEach(b => b.classList.toggle('on', +b.dataset.ms === when));
+    document.querySelectorAll('#rRep button').forEach(b => b.classList.toggle('on', b.dataset.r === repeat));
+    const prob = pushProblem();
+    hint.className = 'hint' + (prob ? ' warn' : '');
+    hint.textContent = prob || (Notification.permission === 'default' ? 'Телефон спитає дозвіл на сповіщення — натисніть «Дозволити».' : '');
+  };
+  paint();
+  $('#rQuick').onclick = e => { const b = e.target.closest('[data-ms]'); if (b) { when = +b.dataset.ms; paint() } };
+  $('#rRep').onclick = e => { const b = e.target.closest('[data-r]'); if (b) { repeat = b.dataset.r; paint() } };
+  dt.onchange = () => { const v = new Date(dt.value).getTime(); when = isNaN(v) ? 0 : v; paint() };
+  $('#rSave').onclick = () => {
+    if (!when) { hint.className = 'hint warn'; hint.textContent = 'Оберіть час нагадування.'; return }
+    if (!repeat && when < Date.now() - 60000) { hint.className = 'hint warn'; hint.textContent = 'Цей час уже минув — оберіть пізніший.'; return }
+    const pushing = enablePush();
+    setRemind(when, repeat);
+    closeSheet();
+    const rl = remindLabel(data.notes[editId]);
+    pushing.then(ok => toast(ok ? 'Нагадаю ' + rl.text : (pushProblem() || 'Нагадування збережено, але сповіщення не увімкнено')));
+  };
+  if ($('#rOff')) $('#rOff').onclick = () => { setRemind(0, ''); closeSheet(); toast('Нагадування прибрано') };
+});
+
+function setRemind(when, repeat) {
+  const n = { ...data.notes[editId], title: eTitle.value, body: eBody.value, remind: when, repeat };
+  isNew = false;
+  change('note', n);
+  paintEditor(n);
+}
+
+function openNoteLink(id) {
+  if (!id || !data.notes[id] || data.notes[id].deleted) return;
+  if (editId === id) return;
+  if (editId) closeEditor(false);
+  closeSheet();
+  setTimeout(() => openEditor(id), editId ? 300 : 0);
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
+  if (e.data && e.data.open) sync().then(() => openNoteLink(e.data.open));
+});
+
+/* ---------- клавіатура iPhone: редактор займає лише видиму частину, панель над клавіатурою ---------- */
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fit = () => {
+    if (!ed.classList.contains('open')) { ed.style.top = ed.style.height = ed.style.bottom = ''; return }
+    ed.style.top = vv.offsetTop + 'px'; ed.style.bottom = 'auto'; ed.style.height = vv.height + 'px';
+    ed.classList.toggle('kb', vv.height < window.innerHeight - 120);
+  };
+  vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
+  new MutationObserver(fit).observe(ed, { attributes: true, attributeFilter: ['class'] });
+}
 
 /* ---------- нижні вікна ---------- */
 function openSheet(html) {
@@ -622,6 +800,10 @@ function settingsSheet() {
     <h4>Кольори</h4>
     <div class="themes">${THEMES.map(([k, t, bg, ac]) => `<button class="th${k === cur ? ' on' : ''}" data-theme="${k}" style="background:${bg};color:${k === 'light' ? '#1b1c1f' : '#eceef2'}"><div class="sw"><span style="background:${ac}"></span><span style="background:${k === 'light' ? '#dedcd4' : 'rgba(255,255,255,.15)'}"></span></div>${t}</button>`).join('')}</div>
     ${deleted.length ? `<h4>Нещодавно видалені</h4>${deleted.slice(0, 15).map(n => `<button class="row" data-restore="${n.id}"><svg class="icon"><use href="#i-restore"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.title.trim() || n.body.trim().split('\n')[0] || 'Без назви')}</span></button>`).join('')}<div class="hint">Видалені зберігаються 30 днів. Натисніть, щоб повернути.</div>` : ''}
+    <h4>Сповіщення</h4>
+    ${pushCan() && Notification.permission === 'granted'
+      ? '<div class="hint" style="padding-top:0">🔔 Увімкнено на цьому пристрої.</div><button class="row" data-a="push-test"><svg class="icon"><use href="#i-bell"/></svg>Надіслати тестове</button>'
+      : `${pushCan() && Notification.permission !== 'denied' ? '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>Увімкнути сповіщення</button>' : ''}<div class="hint${pushProblem() ? ' warn' : ''}">${pushProblem() || 'Потрібні, щоб приходили нагадування з нотаток.'}</div>`}
     <h4>Дані</h4>
     <button class="row" data-a="export"><svg class="icon"><use href="#i-down"/></svg>Експорт (JSON)</button>
     <button class="row" data-a="import"><svg class="icon"><use href="#i-up"/></svg>Імпорт (JSON)</button>
@@ -633,6 +815,8 @@ function settingsSheet() {
     if (r) { change('note', { ...data.notes[r.dataset.restore], deleted: false }); render(); settingsSheet(); toast('Повернено'); return }
     const a = e.target.closest('[data-a]')?.dataset.a;
     if (a === 'export') exportData();
+    if (a === 'push-on') enablePush().then(ok => { toast(ok ? 'Сповіщення увімкнено' : (pushProblem() || 'Не вдалося увімкнути')); settingsSheet() });
+    if (a === 'push-test') fetch('/api/push/test', { method: 'POST' }).then(r => r.json()).then(d => toast(d.sent ? 'Надіслано — має прийти за кілька секунд' : 'Не знайшов пристроїв зі сповіщеннями')).catch(() => toast('Не вдалося надіслати'));
     if (a === 'import') importData();
   };
 }
@@ -682,8 +866,12 @@ window.addEventListener('pagehide', commit);
 window.addEventListener('online', () => sync());
 setInterval(() => { if (document.visibilityState === 'visible') sync() }, 15000);
 
-if (location.hash === '#note') history.replaceState(null, '', location.pathname);
-applyTheme(); render(); sync(); checkVersion();
+const linked = (location.hash.match(/^#n=(.+)$/) || [])[1];
+if (location.hash) history.replaceState(null, '', location.pathname);
+applyTheme(); render(); checkVersion();
+sync().then(() => { if (linked) openNoteLink(decodeURIComponent(linked)) });
+if (linked) openNoteLink(decodeURIComponent(linked));
+if (pushCan() && Notification.permission === 'granted') subscribe(false).catch(() => {});
 </script>
 </body>
 </html>

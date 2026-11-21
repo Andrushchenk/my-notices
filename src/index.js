@@ -1,11 +1,15 @@
 import { checkAuth } from './auth.js';
+import { vapid, loadSubs, notify, remindNotes } from './push.js';
 
 // Дані: один ключ `notes` у KV: { notes: {id: нотатка}, settings: {theme, updated} }
-// Нотатка: { id, title, body, pinned, color, deleted, created, updated }
+// Нотатка: { id, title, body, pinned, color, remind, repeat, deleted, created, updated }
+// remind — мітка часу нагадування (мс, 0 = без сповіщення), repeat — '' | 'day' | 'week'
 const KEY = 'notes';
 const THEMES = ['graphite', 'racing', 'red', 'navy', 'purple', 'light'];
 const COLORS = ['', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 const DAY = 86400000;
+const REPEATS = ['', 'day', 'week'];
+const SITE = 'https://my-notices.yuraandrushenk.workers.dev';
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -23,6 +27,8 @@ function cleanNote(n) {
     body: String(n.body || '').slice(0, 100000),
     pinned: !!n.pinned,
     color: COLORS.includes(n.color) ? n.color : '',
+    remind: Math.max(0, Number(n.remind) || 0),
+    repeat: REPEATS.includes(n.repeat) ? n.repeat : '',
     deleted: !!n.deleted,
     created: Number(n.created) || Date.now(),
     updated: Number(n.updated) || Date.now(),
@@ -33,7 +39,37 @@ function cleanSettings(s) {
   return { theme: THEMES.includes(s?.theme) ? s.theme : 'graphite', updated: Number(s?.updated) || Date.now() };
 }
 
+async function pushApi(request, env, url) {
+  if (url.pathname === '/api/push/key') return new Response((await vapid(env)).pub, { headers: { 'Cache-Control': 'no-store' } });
+  if (url.pathname === '/api/push/pending') {
+    // service worker забирає текст сповіщень (сам push порожній)
+    const ep = url.searchParams.get('ep') || '';
+    const subs = await loadSubs(env);
+    const q = (subs[ep] && subs[ep].queue) || [];
+    if (q.length) { subs[ep].queue = []; await env.KV.put('push:subs', JSON.stringify(subs)); }
+    return json(q);
+  }
+  if (url.pathname === '/api/push/status') return json({ devices: Object.keys(await loadSubs(env)).length });
+  if (request.method !== 'POST' || request.headers.get('Origin') !== url.origin) return json({ error: 'origin' }, 403);
+  if (url.pathname === '/api/push/subscribe') {
+    const sub = await request.json().catch(() => null);
+    if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint)) return json({ error: 'sub' }, 400);
+    const subs = await loadSubs(env);
+    subs[sub.endpoint] = { queue: (subs[sub.endpoint] && subs[sub.endpoint].queue) || [], added: Date.now() };
+    await env.KV.put('push:subs', JSON.stringify(subs));
+    return json({ ok: true });
+  }
+  if (url.pathname === '/api/push/test') {
+    const sent = await notify(env, [{ id: 'test-' + Date.now(), title: 'Тестове сповіщення ✓', body: 'Нагадування з нотаток приходитимуть так' }], url.origin);
+    return json({ ok: true, sent });
+  }
+  return json({ error: 'not found' }, 404);
+}
+
 async function api(request, env, url) {
+  if (url.pathname.startsWith('/api/push/')) {
+    try { return await pushApi(request, env, url); } catch { return json({ error: 'push unavailable' }, 503); }
+  }
   if (url.pathname !== '/api/data') return json({ error: 'not found' }, 404);
   const data = await load(env);
 
@@ -65,6 +101,9 @@ async function api(request, env, url) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(load(env).then((data) => remindNotes(env, data, env.SITE_URL || SITE)));
+  },
   async fetch(request, env) {
     const url = new URL(request.url);
     const denied = await checkAuth(request, env);

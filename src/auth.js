@@ -2,7 +2,7 @@
 // Після входу пристрій отримує cookie на рік.
 
 const COOKIE = 'notes_auth';
-const PUBLIC = new Set(['/manifest.webmanifest', '/icon-v8-180.png', '/icon-v8-512.png', '/favicon.ico']);
+const PUBLIC = new Set(['/manifest.webmanifest', '/icon-v8-180.png', '/icon-v8-512.png', '/favicon.ico', '/sw.js', '/api/push/pending']);
 
 async function token(env) {
   const data = new TextEncoder().encode('my-notices:' + env.PASSWORD);

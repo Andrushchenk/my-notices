@@ -10,6 +10,9 @@
     "run_worker_first": true
   },
   "kv_namespaces": [{ "binding": "KV" }],
+  // щохвилини перевіряє нагадування нотаток
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": { "SITE_URL": "https://my-notices.yuraandrushenk.workers.dev" },
   // зберігає секрет PASSWORD при розгортаннях
   "keep_vars": true
 }

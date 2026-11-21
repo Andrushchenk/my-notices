@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="uk" data-theme="graphite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121316">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Нотатки">
+<link rel="apple-touch-icon" href="/icon-v4-180.png">
+<link rel="icon" href="/icon-v4-180.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>Нотатки</title>
+<script>try{const t=JSON.parse(localStorage.getItem('my-notices-data')||'{}').settings?.theme;if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{
+  --bg:#121316;--panel:#1c1d21;--panel2:#25272c;--ink:#eceef2;--muted:#8b8f99;--line:#2e3036;
+  --accent:#f2c14e;--on-accent:#1a1400;--danger:#ff5d5d;
+  --c-red:#ff6b6b;--c-orange:#ff9f43;--c-yellow:#f2c14e;--c-green:#3ecf8e;--c-blue:#4f8cff;--c-purple:#a678ff;
+  --tint:14%;
+  --safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom);
+}
+[data-theme=racing]{--bg:#0d1a14;--panel:#13241c;--panel2:#1a3026;--ink:#eef3ee;--muted:#8fa597;--line:#24392e;--accent:#d4af37;--on-accent:#1a1400}
+[data-theme=red]{--bg:#0e0b0b;--panel:#1a1314;--panel2:#241a1b;--ink:#f3eceb;--muted:#a08e8e;--line:#33292a;--accent:#e0313f;--on-accent:#fff}
+[data-theme=navy]{--bg:#0b1220;--panel:#121b2e;--panel2:#18243b;--ink:#e8eef8;--muted:#8a98b3;--line:#22304a;--accent:#4f8cff;--on-accent:#fff}
+[data-theme=purple]{--bg:#120f1c;--panel:#1b1729;--panel2:#241f36;--ink:#efeaf8;--muted:#9a90b3;--line:#2e2843;--accent:#a678ff;--on-accent:#fff}
+[data-theme=light]{--bg:#f4f4f1;--panel:#fff;--panel2:#ecebe6;--ink:#1b1c1f;--muted:#6b6e76;--line:#dedcd4;--accent:#f2b705;--on-accent:#1a1400;--danger:#d63031;--tint:22%;
+  --c-red:#e5484d;--c-orange:#f08c00;--c-yellow:#e0a800;--c-green:#1f9d6a;--c-blue:#2f6fe4;--c-purple:#7c4dff}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;min-height:100dvh;overscroll-behavior-y:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-user-select:none;user-select:none}
+input,textarea{font:inherit;color:inherit}
+svg{display:block}
+.icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* шапка */
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(var(--safe-t) + 10px) 16px 8px}
+.top{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:11px;flex:none}
+.top h1{font-size:24px;margin:0;flex:1;letter-spacing:-.3px}
+.top h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}
+.round{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line)}
+.search{margin-top:12px;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 12px}
+.search input{flex:1;border:0;background:none;outline:none;font-size:16px;padding:11px 0}
+.search .icon{width:18px;height:18px;color:var(--muted)}
+.search button{color:var(--muted);font-size:20px;line-height:1;padding:4px;display:none}
+.search.has button{display:block}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:6px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+.chip .dot{width:10px;height:10px}
+
+/* список */
+main{padding:6px 12px calc(var(--safe-b) + 110px)}
+.sec{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 6px 8px}
+.grid{columns:2;column-gap:10px}
+@media(min-width:720px){.grid{columns:3}}
+@media(min-width:1100px){.grid{columns:4}main{max-width:1200px;margin:0 auto}}
+.card{break-inside:avoid;margin:0 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 13px 10px;position:relative;overflow:hidden;cursor:pointer;transition:transform .12s}
+.card:active{transform:scale(.98)}
+.card[data-c]{background:color-mix(in srgb,var(--cc) var(--tint),var(--panel));border-color:color-mix(in srgb,var(--cc) 35%,var(--line))}
+.card h3{margin:0 0 4px;font-size:16px;line-height:1.3;word-wrap:break-word}
+.card .body{font-size:14px;color:color-mix(in srgb,var(--ink) 82%,var(--muted));white-space:pre-wrap;word-wrap:break-word;max-height:16.5em;overflow:hidden}
+.card .more{font-size:12px;color:var(--muted);margin-top:2px}
+.card .meta{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--muted)}
+.card .meta .pin{width:14px;height:14px;color:var(--accent)}
+.ck{display:flex;gap:7px;align-items:flex-start;padding:2px 0}
+.ck i{flex:none;width:17px;height:17px;margin-top:1px;border:2px solid var(--muted);border-radius:5px;display:grid;place-items:center;font-style:normal}
+.ck.done{color:var(--muted);text-decoration:line-through}
+.ck.done i{background:var(--accent);border-color:var(--accent)}
+.ck.done i::after{content:"";width:5px;height:9px;border:solid var(--on-accent);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;border-radius:3px}
+.empty{text-align:center;color:var(--muted);padding:70px 20px}
+.empty img{width:72px;height:72px;border-radius:18px;opacity:.85}
+.empty p{margin:14px 0 0}
+
+.fab{position:fixed;right:18px;bottom:calc(var(--safe-b) + 20px);width:62px;height:62px;border-radius:20px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.05);z-index:6}
+.fab .icon{width:28px;height:28px;stroke-width:2.6}
+
+/* редактор */
+.editor{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+.editor.open{transform:none;visibility:visible}
+.editor[data-c]{background:color-mix(in srgb,var(--cc) calc(var(--tint) * .7),var(--bg))}
+.ebar{display:flex;align-items:center;gap:6px;padding:calc(var(--safe-t) + 8px) 10px 6px}
+.ebar .sp{flex:1}
+.ib{width:42px;height:42px;border-radius:12px;display:grid;place-items:center}
+.ib:active{background:var(--panel2)}
+.ib.on{color:var(--accent)}
+.ib.on .icon{fill:currentColor}
+.escroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 20px}
+.etitle{width:100%;border:0;background:none;outline:none;font-size:23px;font-weight:700;padding:6px 0;letter-spacing:-.2px}
+.ebody{width:100%;border:0;background:none;outline:none;resize:none;font-size:17px;line-height:1.55;min-height:50vh;padding:4px 0;overflow:hidden}
+.etitle::placeholder,.ebody::placeholder{color:var(--muted)}
+.efoot{display:flex;align-items:center;gap:4px;padding:6px 10px calc(var(--safe-b) + 6px);border-top:1px solid var(--line);background:inherit}
+.efoot .when{flex:1;text-align:center;font-size:12px;color:var(--muted)}
+.tool{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;font-size:14px;color:var(--muted)}
+.tool:active{background:var(--panel2)}
+
+/* меню, вікна */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--panel);border-radius:22px 22px 0 0;padding:10px 16px calc(var(--safe-b) + 16px);transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1);max-height:85dvh;overflow-y:auto;max-width:620px;margin:0 auto}
+.sheet.show{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h2{font-size:18px;margin:4px 4px 12px}
+.sheet h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 4px 8px}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:13px 12px;border-radius:14px;text-align:left;font-size:16px}
+.row:active{background:var(--panel2)}
+.row .icon{color:var(--muted)}
+.row.danger,.row.danger .icon{color:var(--danger)}
+.colors{display:flex;gap:12px;flex-wrap:wrap;padding:4px}
+.dot{width:36px;height:36px;border-radius:50%;background:var(--cc,var(--panel2));border:2px solid var(--line);display:grid;place-items:center}
+.dot.on{outline:3px solid var(--ink);outline-offset:2px}
+.dot.none::after{content:"";width:60%;height:2px;background:var(--muted);transform:rotate(-45deg)}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.th{border-radius:14px;padding:10px;border:2px solid var(--line);text-align:left;font-size:13px}
+.th.on{border-color:var(--accent)}
+.th .sw{display:flex;gap:4px;margin-bottom:8px}
+.th .sw span{width:18px;height:18px;border-radius:50%}
+.hint{font-size:13px;color:var(--muted);padding:8px 6px 0}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 96px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:11px 14px 11px 16px;border-radius:14px;display:flex;align-items:center;gap:14px;z-index:40;opacity:0;pointer-events:none;transition:.2s;font-size:15px;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{color:var(--accent);font-weight:700;filter:brightness(.85)}
+[data-theme=light] .toast button{filter:none;color:#ffd04d}
+.sync{position:fixed;top:calc(var(--safe-t) + 4px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);z-index:6;pointer-events:none;opacity:0;transition:opacity .3s}
+.sync.show{opacity:1}
+
+[data-c=red]{--cc:var(--c-red)}[data-c=orange]{--cc:var(--c-orange)}[data-c=yellow]{--cc:var(--c-yellow)}
+[data-c=green]{--cc:var(--c-green)}[data-c=blue]{--cc:var(--c-blue)}[data-c=purple]{--cc:var(--c-purple)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 15v6"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-dup" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/><path d="M14.5 11.5v6M11.5 14.5h6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></symbol>
+  <symbol id="i-restore" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+</svg>
+
+<div class="sync" id="sync"></div>
+
+<header>
+  <div class="top">
+    <img class="logo" src="/icon-v4-180.png" alt="">
+    <h1>Нотатки<small id="count"></small></h1>
+    <button class="round" id="gear" aria-label="Налаштування"><svg class="icon"><use href="#i-gear"/></svg></button>
+  </div>
+  <label class="search" id="searchBox">
+    <svg class="icon"><use href="#i-search"/></svg>
+    <input id="q" type="search" placeholder="Пошук у нотатках" autocomplete="off" enterkeyhint="search">
+    <button type="button" id="qClear" aria-label="Очистити">×</button>
+  </label>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="list"></main>
+
+<button class="fab" id="add" aria-label="Нова нотатка"><svg class="icon"><use href="#i-plus"/></svg></button>
+
+<section class="editor" id="editor" aria-hidden="true">
+  <div class="ebar">
+    <button class="ib" id="eBack" aria-label="Назад"><svg class="icon"><use href="#i-back"/></svg></button>
+    <div class="sp"></div>
+    <button class="ib" id="ePin" aria-label="Закріпити"><svg class="icon"><use href="#i-pin"/></svg></button>
+    <button class="ib" id="eColor" aria-label="Колір"><svg class="icon"><use href="#i-palette"/></svg></button>
+    <button class="ib" id="eMore" aria-label="Ще"><svg class="icon"><use href="#i-dots"/></svg></button>
+  </div>
+  <div class="escroll" id="eScroll">
+    <input class="etitle" id="eTitle" placeholder="Заголовок" enterkeyhint="next" autocomplete="off">
+    <textarea class="ebody" id="eBody" placeholder="Нотатка…" autocomplete="off"></textarea>
+  </div>
+  <div class="efoot">
+    <button class="tool" id="eCheck"><svg class="icon"><use href="#i-check"/></svg>Пункт списку</button>
+    <div class="when" id="eWhen"></div>
+  </div>
+</section>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"><span id="toastText"></span><button id="toastBtn"></button></div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const LS = 'my-notices-data', LP = 'my-notices-pending';
+const BOX = '☐', DONE = '☑';
+const COLORS = [['', 'Без кольору'], ['red', 'Червоний'], ['orange', 'Помаранчевий'], ['yellow', 'Жовтий'], ['green', 'Зелений'], ['blue', 'Синій'], ['purple', 'Фіолетовий']];
+const THEMES = [
+  ['graphite', 'Графіт', '#1c1d21', '#f2c14e'],
+  ['racing', 'Британський зелений', '#13241c', '#d4af37'],
+  ['red', 'Чорно-червона', '#1a1314', '#e0313f'],
+  ['navy', 'Нічна синя', '#121b2e', '#4f8cff'],
+  ['purple', 'Фіолетова', '#1b1729', '#a678ff'],
+  ['light', 'Світла', '#ffffff', '#f2b705'],
+];
+const BG = { graphite: '#121316', racing: '#0d1a14', red: '#0e0b0b', navy: '#0b1220', purple: '#120f1c', light: '#f4f4f1' };
+
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch (e) { return d } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} },
+};
+
+let data = store.get(LS, { notes: {}, settings: { theme: 'graphite', updated: 0 } });
+data.notes ||= {}; data.settings ||= { theme: 'graphite', updated: 0 };
+let pending = store.get(LP, {});         // ключ → зміна {type, item}
+let query = '', filter = 'all', editId = null, isNew = false;
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const alive = () => Object.values(data.notes).filter(n => !n.deleted);
+const isEmpty = n => !n.title.trim() && !n.body.replace(/[☐☑\s]/g, '');
+
+/* ---------- збереження і синхронізація ---------- */
+function saveLocal() { store.set(LS, data); store.set(LP, pending) }
+
+function change(type, item) {
+  item.updated = Date.now();
+  if (type === 'note') data.notes[item.id] = item; else data.settings = item;
+  pending[type === 'note' ? 'n:' + item.id : 'settings'] = { type, item: { ...item } };
+  saveLocal();
+  scheduleSync(800);
+}
+
+let syncTimer = null, syncing = false;
+function scheduleSync(ms) { clearTimeout(syncTimer); syncTimer = setTimeout(sync, ms) }
+
+async function sync() {
+  if (syncing) return scheduleSync(500);
+  syncing = true;
+  const sent = Object.entries(pending);
+  try {
+    const res = sent.length
+      ? await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sent.map(([, c]) => c)) })
+      : await fetch('/api/data', { cache: 'no-store' });
+    if (res.status === 401) { location.reload(); return }
+    if (!res.ok) throw new Error(res.status);
+    const server = await res.json();
+    // прибираємо відправлене, якщо його не змінили ще раз за час запиту
+    for (const [k, c] of sent) if (pending[k] && pending[k].item.updated === c.item.updated) delete pending[k];
+    merge(server);
+    showSync('');
+  } catch (e) {
+    showSync(navigator.onLine ? '' : 'Без інтернету — збережено на телефоні');
+  } finally {
+    syncing = false;
+  }
+}
+
+function merge(server) {
+  const notes = server.notes || {};
+  for (const p of Object.values(pending)) if (p.type === 'note') {
+    const s = notes[p.item.id];
+    if (!s || s.updated < p.item.updated) notes[p.item.id] = p.item;
+  }
+  // нотатку, яку зараз редагують, не чіпаємо
+  if (editId && data.notes[editId]) {
+    const s = notes[editId];
+    if (!s || s.updated <= data.notes[editId].updated || isNew) notes[editId] = data.notes[editId];
+    else if (document.activeElement !== $('#eBody') && document.activeElement !== $('#eTitle')) fillEditor(s);
+    else notes[editId] = data.notes[editId];
+  }
+  let settings = server.settings || data.settings;
+  if (pending.settings) settings = pending.settings.item;
+  const before = JSON.stringify(data);
+  data = { notes, settings };
+  saveLocal();
+  if (JSON.stringify(data) !== before) { applyTheme(); render() }
+}
+
+let syncMsgTimer;
+function showSync(t) {
+  const el = $('#sync');
+  clearTimeout(syncMsgTimer);
+  if (!t) return el.classList.remove('show');
+  el.textContent = t; el.classList.add('show');
+}
+
+/* ---------- тема ---------- */
+function applyTheme() {
+  const t = data.settings.theme || 'graphite';
+  document.documentElement.dataset.theme = t;
+  document.querySelector('meta[name=theme-color]').content = BG[t] || BG.graphite;
+}
+
+/* ---------- список ---------- */
+function fmtDate(ts) {
+  const d = new Date(ts), now = new Date();
+  const day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(now) - day(d)) / 864e5);
+  const hm = d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+  if (diff === 0) return 'сьогодні ' + hm;
+  if (diff === 1) return 'вчора ' + hm;
+  const opts = { day: 'numeric', month: 'short' };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('uk-UA', opts);
+}
+
+function hl(text) {
+  let h = esc(text);
+  if (!query) return h;
+  const q = esc(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return h.replace(new RegExp(q, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+function preview(n) {
+  const lines = n.body.replace(/\s+$/, '').split('\n');
+  const shown = lines.slice(0, 12);
+  let html = '', buf = [];
+  const flush = () => { if (buf.length) { html += `<div>${buf.map(hl).join('\n')}</div>`; buf = [] } };
+  shown.forEach((l, i) => {
+    const m = l.match(/^(\s*)([☐☑])\s?(.*)$/);
+    if (m) { flush(); html += `<div class="ck${m[2] === DONE ? ' done' : ''}" data-line="${i}"><i></i><span>${hl(m[3]) || '&nbsp;'}</span></div>` }
+    else buf.push(l);
+  });
+  flush();
+  return { html, more: lines.length > 12 ? lines.length - 12 : 0 };
+}
+
+function card(n) {
+  const p = preview(n);
+  const checks = n.body.match(/^\s*[☐☑]/gm) || [];
+  const done = (n.body.match(/^\s*☑/gm) || []).length;
+  return `<article class="card" data-id="${n.id}"${n.color ? ` data-c="${n.color}"` : ''}>
+    ${n.title.trim() ? `<h3>${hl(n.title)}</h3>` : ''}
+    ${p.html ? `<div class="body">${p.html}</div>` : ''}
+    ${p.more ? `<div class="more">+ ще ${p.more} ${plural(p.more, 'рядок', 'рядки', 'рядків')}</div>` : ''}
+    <div class="meta">${n.pinned ? '<svg class="icon pin"><use href="#i-pin"/></svg>' : ''}${checks.length ? `<span>${done}/${checks.length} ✓</span>·` : ''}<span>${fmtDate(n.updated)}</span></div>
+  </article>`;
+}
+
+function plural(n, a, b, c) {
+  const m10 = n % 10, m100 = n % 100;
+  return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c;
+}
+
+function renderChips() {
+  const all = alive();
+  const used = new Set(all.map(n => n.color).filter(Boolean));
+  const chips = [['all', 'Усі'], ['pinned', 'Закріплені'], ['lists', 'Списки']];
+  let html = chips.map(([k, t]) => `<button class="chip${filter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+  html += COLORS.filter(([c]) => c && used.has(c)).map(([c, t]) =>
+    `<button class="chip${filter === c ? ' on' : ''}" data-f="${c}" aria-label="${t}"><span class="dot" data-c="${c}" style="border:0"></span></button>`).join('');
+  $('#chips').innerHTML = html;
+}
+
+function render() {
+  let notes = alive();
+  $('#count').textContent = notes.length ? `${notes.length} ${plural(notes.length, 'нотатка', 'нотатки', 'нотаток')}` : '';
+  if (filter !== 'all' && filter !== 'pinned' && filter !== 'lists' && !notes.some(n => n.color === filter)) filter = 'all';
+  renderChips();
+  if (filter === 'pinned') notes = notes.filter(n => n.pinned);
+  else if (filter === 'lists') notes = notes.filter(n => /^\s*[☐☑]/m.test(n.body));
+  else if (filter !== 'all') notes = notes.filter(n => n.color === filter);
+  if (query) {
+    const q = query.toLowerCase();
+    notes = notes.filter(n => (n.title + '\n' + n.body).toLowerCase().includes(q));
+  }
+  notes.sort((a, b) => b.updated - a.updated);
+  const pinned = notes.filter(n => n.pinned), rest = notes.filter(n => !n.pinned);
+  let html = '';
+  if (!notes.length) {
+    html = `<div class="empty"><img src="/icon-v4-180.png" alt=""><p>${query ? 'Нічого не знайдено' : alive().length ? 'Тут поки порожньо' : 'Ще немає нотаток.<br>Натисніть «+», щоб записати першу.'}</p></div>`;
+  } else if (pinned.length && rest.length) {
+    html = `<div class="sec">Закріплені</div><div class="grid">${pinned.map(card).join('')}</div><div class="sec">Інші</div><div class="grid">${rest.map(card).join('')}</div>`;
+  } else {
+    html = `<div class="grid" style="margin-top:8px">${notes.map(card).join('')}</div>`;
+  }
+  $('#list').innerHTML = html;
+}
+
+$('#list').addEventListener('click', e => {
+  const c = e.target.closest('.card');
+  if (!c) return;
+  const ck = e.target.closest('.ck');
+  if (ck) {   // галочку в списку можна ставити без відкриття нотатки
+    const n = { ...data.notes[c.dataset.id] };
+    const lines = n.body.split('\n'), i = +ck.dataset.line;
+    lines[i] = lines[i].replace(/^(\s*)([☐☑])/, (m, s, b) => s + (b === BOX ? DONE : BOX));
+    n.body = lines.join('\n');
+    change('note', n); render();
+    return;
+  }
+  openEditor(c.dataset.id);
+});
+
+$('#chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  filter = filter === b.dataset.f ? 'all' : b.dataset.f;
+  if (b.dataset.f === 'all') filter = 'all';
+  render();
+});
+
+$('#q').addEventListener('input', e => {
+  query = e.target.value.trim();
+  $('#searchBox').classList.toggle('has', !!e.target.value);
+  render();
+});
+$('#qClear').addEventListener('click', () => { $('#q').value = ''; query = ''; $('#searchBox').classList.remove('has'); render() });
+
+/* ---------- редактор ---------- */
+const ed = $('#editor'), eTitle = $('#eTitle'), eBody = $('#eBody');
+let saveTimer = null;
+
+function grow() { eBody.style.height = 'auto'; eBody.style.height = eBody.scrollHeight + 'px' }
+
+function fillEditor(n) {
+  eTitle.value = n.title; eBody.value = n.body;
+  paintEditor(n); grow();
+}
+function paintEditor(n) {
+  if (n.color) ed.dataset.c = n.color; else delete ed.dataset.c;
+  $('#ePin').classList.toggle('on', !!n.pinned);
+  $('#eWhen').textContent = isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
+}
+
+function openEditor(id, preset) {
+  isNew = !id;
+  if (!id) {
+    id = uid();
+    data.notes[id] = { id, title: '', body: '', pinned: filter === 'pinned', color: COLORS.some(c => c[0] === filter) ? filter : '', deleted: false, created: Date.now(), updated: Date.now(), ...preset };
+  }
+  editId = id;
+  fillEditor(data.notes[id]);
+  ed.classList.add('open'); ed.setAttribute('aria-hidden', 'false');
+  $('#eScroll').scrollTop = 0;
+  if (location.hash !== '#note') history.pushState({ note: 1 }, '', '#note');
+  if (isNew) setTimeout(() => (preset?.body ? eBody : eBody).focus(), 50);
+}
+
+function commit() {
+  clearTimeout(saveTimer);
+  if (!editId) return;
+  const n = { ...data.notes[editId], title: eTitle.value, body: eBody.value };
+  const old = data.notes[editId];
+  if (isNew && isEmpty(n)) return;
+  if (!isNew && old.title === n.title && old.body === n.body) return;
+  isNew = false;
+  change('note', n);
+  paintEditor(data.notes[editId]);
+}
+
+function closeEditor(fromPop) {
+  if (!editId) return;
+  commit();
+  const n = data.notes[editId];
+  if (isNew && n && isEmpty(n)) delete data.notes[editId];          // порожню нову не зберігаємо
+  else if (n && !isNew && isEmpty(n) && !n.deleted) {               // стерли все — видаляємо з можливістю повернути
+    removeNote(editId, 'Порожню нотатку видалено');
+  }
+  editId = null; isNew = false;
+  document.activeElement?.blur();
+  ed.classList.remove('open'); ed.setAttribute('aria-hidden', 'true');
+  if (!fromPop && location.hash === '#note') history.back();
+  render();
+}
+
+[eTitle, eBody].forEach(el => el.addEventListener('input', () => {
+  if (el === eBody) grow();
+  clearTimeout(saveTimer); saveTimer = setTimeout(commit, 500);
+}));
+eTitle.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); eBody.focus(); eBody.setSelectionRange(0, 0) } });
+
+// Enter у рядку-пункті створює наступний пункт; Enter у порожньому пункті завершує список
+eBody.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
+  const v = eBody.value, pos = eBody.selectionStart;
+  if (pos !== eBody.selectionEnd) return;
+  const start = v.lastIndexOf('\n', pos - 1) + 1;
+  const line = v.slice(start, pos);
+  const m = line.match(/^(\s*)([☐☑]) ?/);
+  if (!m) return;
+  e.preventDefault();
+  if (line.trim() === m[2]) {           // порожній пункт → прибрати галочку
+    eBody.setRangeText('', start, pos, 'end');
+  } else {
+    eBody.setRangeText('\n' + m[1] + BOX + ' ', pos, pos, 'end');
+  }
+  eBody.dispatchEvent(new Event('input'));
+});
+
+// натискання на ☐/☑ у тексті перемикає галочку
+eBody.addEventListener('click', () => {
+  const pos = eBody.selectionStart; if (pos !== eBody.selectionEnd) return;
+  const v = eBody.value;
+  const start = v.lastIndexOf('\n', pos - 1) + 1;
+  const m = v.slice(start).match(/^(\s*)([☐☑])/);
+  if (!m) return;
+  const at = start + m[1].length;
+  if (pos < at || pos > at + 2) return;
+  eBody.setRangeText(m[2] === BOX ? DONE : BOX, at, at + 1, 'preserve');
+  eBody.setSelectionRange(at + 2, at + 2);
+  eBody.dispatchEvent(new Event('input'));
+});
+
+// кнопка «Пункт списку»: перемикає поточний рядок (або виділені рядки) у пункт і назад
+$('#eCheck').addEventListener('pointerdown', e => e.preventDefault());   // не ховати клавіатуру
+$('#eCheck').addEventListener('click', () => {
+  const v = eBody.value;
+  let s = eBody.selectionStart, en = eBody.selectionEnd;
+  if (document.activeElement !== eBody) { s = en = v.length }
+  const a = v.lastIndexOf('\n', s - 1) + 1;
+  let b = v.indexOf('\n', en); if (b < 0) b = v.length;
+  const lines = v.slice(a, b).split('\n');
+  const allChecks = lines.every(l => /^\s*[☐☑]/.test(l));
+  const out = lines.map(l => allChecks ? l.replace(/^(\s*)[☐☑] ?/, '$1') : /^\s*[☐☑]/.test(l) ? l : BOX + ' ' + l).join('\n');
+  eBody.focus();
+  eBody.setRangeText(out, a, b, 'end');
+  eBody.dispatchEvent(new Event('input'));
+});
+
+$('#eBack').addEventListener('click', () => closeEditor(false));
+window.addEventListener('popstate', () => { if (editId) closeEditor(true); else closeSheet() });
+
+$('#ePin').addEventListener('click', () => {
+  commit();
+  const n = { ...data.notes[editId], title: eTitle.value, body: eBody.value, pinned: !data.notes[editId].pinned };
+  if (isNew && isEmpty(n)) { data.notes[editId] = n; paintEditor(n); return }
+  isNew = false; change('note', n); paintEditor(n);
+  toast(n.pinned ? 'Закріплено вгорі' : 'Відкріплено');
+});
+
+$('#eColor').addEventListener('click', () => {
+  const cur = data.notes[editId].color || '';
+  openSheet(`<div class="grab"></div><h2>Колір нотатки</h2><div class="colors">${COLORS.map(([c, t]) =>
+    `<button class="dot${c ? '' : ' none'}${cur === c ? ' on' : ''}" ${c ? `data-c="${c}"` : ''} data-set="${c}" aria-label="${t}"></button>`).join('')}</div>`);
+  $('#sheet').onclick = e => {
+    const b = e.target.closest('[data-set]'); if (!b) return;
+    const n = { ...data.notes[editId], title: eTitle.value, body: eBody.value, color: b.dataset.set };
+    if (isNew && isEmpty(n)) data.notes[editId] = n; else { isNew = false; change('note', n) }
+    paintEditor(n); closeSheet();
+  };
+});
+
+$('#eMore').addEventListener('click', () => {
+  commit();
+  openSheet(`<div class="grab"></div>
+    <button class="row" data-a="share"><svg class="icon"><use href="#i-share"/></svg>Поділитися</button>
+    <button class="row" data-a="copy"><svg class="icon"><use href="#i-copy"/></svg>Скопіювати текст</button>
+    <button class="row" data-a="dup"><svg class="icon"><use href="#i-dup"/></svg>Зробити копію</button>
+    ${/^\s*☑/m.test(eBody.value) ? '<button class="row" data-a="uncheck"><svg class="icon"><use href="#i-restore"/></svg>Зняти всі галочки</button>' : ''}
+    <button class="row danger" data-a="del"><svg class="icon"><use href="#i-trash"/></svg>Видалити</button>`);
+  $('#sheet').onclick = async e => {
+    const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+    const text = [eTitle.value.trim(), eBody.value.trim()].filter(Boolean).join('\n\n');
+    closeSheet();
+    if (a === 'share') {
+      if (navigator.share) { try { await navigator.share({ text }) } catch (err) {} }
+      else copy(text);
+    } else if (a === 'copy') copy(text);
+    else if (a === 'dup') {
+      const src = data.notes[editId];
+      closeEditor(false);
+      const id = uid();
+      change('note', { ...src, id, title: src.title ? src.title + ' (копія)' : '', pinned: false, created: Date.now() });
+      render(); toast('Копію створено');
+    } else if (a === 'uncheck') {
+      eBody.value = eBody.value.replace(/^(\s*)☑/gm, '$1' + BOX);
+      eBody.dispatchEvent(new Event('input')); commit();
+    } else if (a === 'del') {
+      const id = editId;
+      if (isNew && isEmpty(data.notes[id])) { closeEditor(false); return }
+      isNew = false;
+      closeEditor(false);
+      removeNote(id, 'Нотатку видалено');
+    }
+  };
+});
+
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); toast('Скопійовано') }
+  catch (e) { toast('Не вдалося скопіювати') }
+}
+
+function removeNote(id, msg) {
+  const n = data.notes[id]; if (!n) return;
+  change('note', { ...n, deleted: true });
+  render();
+  toast(msg, 'Повернути', () => { change('note', { ...data.notes[id], deleted: false }); render() });
+}
+
+$('#add').addEventListener('click', () => openEditor(null));
+
+/* ---------- нижні вікна ---------- */
+function openSheet(html) {
+  $('#sheet').innerHTML = html; $('#sheet').onclick = null;
+  $('#sheet').classList.add('show'); $('#backdrop').classList.add('show');
+}
+function closeSheet() { $('#sheet').classList.remove('show'); $('#backdrop').classList.remove('show') }
+$('#backdrop').addEventListener('click', closeSheet);
+
+let toastTimer;
+function toast(text, btn, fn) {
+  $('#toastText').textContent = text;
+  $('#toastBtn').textContent = btn || ''; $('#toastBtn').style.display = btn ? '' : 'none';
+  $('#toastBtn').onclick = () => { $('#toast').classList.remove('show'); fn && fn() };
+  $('#toast').classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('show'), btn ? 5000 : 1800);
+}
+
+/* ---------- налаштування ---------- */
+$('#gear').addEventListener('click', settingsSheet);
+function settingsSheet() {
+  const cur = data.settings.theme || 'graphite';
+  const deleted = Object.values(data.notes).filter(n => n.deleted).sort((a, b) => b.updated - a.updated);
+  openSheet(`<div class="grab"></div><h2>Налаштування</h2>
+    <h4>Кольори</h4>
+    <div class="themes">${THEMES.map(([k, t, bg, ac]) => `<button class="th${k === cur ? ' on' : ''}" data-theme="${k}" style="background:${bg};color:${k === 'light' ? '#1b1c1f' : '#eceef2'}"><div class="sw"><span style="background:${ac}"></span><span style="background:${k === 'light' ? '#dedcd4' : 'rgba(255,255,255,.15)'}"></span></div>${t}</button>`).join('')}</div>
+    ${deleted.length ? `<h4>Нещодавно видалені</h4>${deleted.slice(0, 15).map(n => `<button class="row" data-restore="${n.id}"><svg class="icon"><use href="#i-restore"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.title.trim() || n.body.trim().split('\n')[0] || 'Без назви')}</span></button>`).join('')}<div class="hint">Видалені зберігаються 30 днів. Натисніть, щоб повернути.</div>` : ''}
+    <h4>Дані</h4>
+    <button class="row" data-a="export"><svg class="icon"><use href="#i-down"/></svg>Експорт (JSON)</button>
+    <button class="row" data-a="import"><svg class="icon"><use href="#i-up"/></svg>Імпорт (JSON)</button>
+    <div class="hint">Нотатки зберігаються на сервері й однакові на всіх пристроях, де ви увійшли. Без інтернету зміни чекають на телефоні.</div>`);
+  $('#sheet').onclick = e => {
+    const th = e.target.closest('[data-theme]');
+    if (th) { change('settings', { ...data.settings, theme: th.dataset.theme }); applyTheme(); settingsSheet(); return }
+    const r = e.target.closest('[data-restore]');
+    if (r) { change('note', { ...data.notes[r.dataset.restore], deleted: false }); render(); settingsSheet(); toast('Повернено'); return }
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    if (a === 'export') exportData();
+    if (a === 'import') importData();
+  };
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify({ app: 'my-notices', exported: new Date().toISOString(), notes: alive() }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `notatky-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importData() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
+  inp.onchange = async () => {
+    try {
+      const j = JSON.parse(await inp.files[0].text());
+      const list = Array.isArray(j) ? j : Array.isArray(j.notes) ? j.notes : Object.values(j.notes || {});
+      let k = 0;
+      for (const n of list) {
+        if (!n || (!n.title && !n.body)) continue;
+        const id = n.id && !data.notes[n.id] ? n.id : uid();
+        change('note', { id, title: String(n.title || ''), body: String(n.body || ''), pinned: !!n.pinned, color: n.color || '', deleted: false, created: n.created || Date.now() });
+        k++;
+      }
+      render(); closeSheet(); toast(`Імпортовано: ${k}`);
+    } catch (e) { toast('Не вдалося прочитати файл') }
+  };
+  inp.click();
+}
+
+/* ---------- оновлення сайту і синхронізація ---------- */
+let etag = null;
+async function checkVersion() {
+  try {
+    const r = await fetch('/', { method: 'HEAD', cache: 'no-store' });
+    const t = r.headers.get('ETag');
+    if (etag && t && t !== etag && !editId) location.reload();
+    etag = t || etag;
+  } catch (e) {}
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { sync(); checkVersion() }
+  else commit();
+});
+window.addEventListener('pagehide', commit);
+window.addEventListener('online', () => sync());
+setInterval(() => { if (document.visibilityState === 'visible') sync() }, 15000);
+
+if (location.hash === '#note') history.replaceState(null, '', location.pathname);
+applyTheme(); render(); sync(); checkVersion();
+</script>
+</body>
+</html>

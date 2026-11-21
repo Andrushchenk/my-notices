@@ -1,0 +1,15 @@
+{
+  // Назва має збігатися з назвою проєкту в Cloudflare
+  "name": "my-notices",
+  "main": "src/index.js",
+  "compatibility_date": "2025-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // потрібно, щоб пароль захищав і саму сторінку — не змінювати
+    "run_worker_first": true
+  },
+  "kv_namespaces": [{ "binding": "KV" }],
+  // зберігає секрет PASSWORD при розгортаннях
+  "keep_vars": true
+}

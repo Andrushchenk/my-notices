@@ -111,7 +111,8 @@ export default {
 
     if (url.pathname.startsWith('/api/')) return api(request, env, url);
 
-    const res = await env.ASSETS.fetch(request);
+    let res = await env.ASSETS.fetch(request);
+    if (res.status === 404 && url.pathname === '/apple-touch-icon-precomposed.png') res = await env.ASSETS.fetch(new Request(new URL('/apple-touch-icon.png', url), request));
     const type = res.headers.get('Content-Type') || '';
     if (type.includes('text/html') || type.includes('manifest')) {
       const out = new Response(res.body, res);

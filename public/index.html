@@ -8,9 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Нотатки">
-<link rel="apple-touch-icon" href="/icon-v8-180.png">
-<link rel="icon" href="/icon-v8-180.png">
 <link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icon-v8-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-v8-180.png">
 <title>Нотатки</title>
 <script>try{const t=JSON.parse(localStorage.getItem('my-notices-data')||'{}').settings?.theme;if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
@@ -152,6 +152,45 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 .sync{position:fixed;top:calc(var(--safe-t) + 4px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);z-index:6;pointer-events:none;opacity:0;transition:opacity .3s}
 .sync.show{opacity:1}
 
+/* ---------- ноутбук / комп'ютер: дві колонки, як у Нотатках на Mac ---------- */
+.placeholder{display:none}
+.card:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.kbd{display:none}
+@media (min-width:900px){
+  :root{--side:380px}
+  body::before{content:"";position:fixed;top:0;bottom:0;left:var(--side);width:1px;background:var(--line);z-index:7}
+  header{width:var(--side);padding:18px 16px 8px}
+  main{width:var(--side);max-width:none!important;margin:0!important;padding:6px 12px 110px}
+  .grid{columns:1!important}
+  .card .body{max-height:7.4em}
+  .card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .fab{left:calc(var(--side) - 78px);right:auto;bottom:20px;width:56px;height:56px;border-radius:18px}
+  .editor{left:calc(var(--side) + 1px);transform:none!important;transition:none;visibility:visible;display:none;z-index:5}
+  .editor.open{display:flex}
+  #eBack{display:none}
+  .ebar{padding:14px 28px 6px}
+  .escroll{padding:10px 48px 30px}
+  .escroll>*{max-width:780px;margin-left:auto;margin-right:auto;display:block}
+  .etitle{font-size:30px}
+  .ebody{font-size:17px;min-height:60vh}
+  .efoot{padding:10px 40px;justify-content:center;gap:16px}
+  .efoot .when{flex:none}
+  .placeholder{position:fixed;left:calc(var(--side) + 1px);right:0;top:0;bottom:0;display:grid;place-items:center;text-align:center;color:var(--muted);z-index:4}
+  .placeholder img{width:64px;height:64px;border-radius:16px;opacity:.7}
+  .placeholder p{margin:14px 0 18px}
+  .placeholder .btn{display:inline-block;flex:none;padding:12px 22px}
+  .editor.open~.placeholder{display:none}
+  .kbd{display:block;font-size:12px;margin-top:14px;opacity:.8}
+  .kbd b{display:inline-block;min-width:20px;padding:1px 6px;border:1px solid var(--line);border-radius:6px;font-weight:600;margin:0 2px}
+  .sheet{left:50%;right:auto;top:50%;bottom:auto;width:520px;max-width:calc(100vw - 40px);border-radius:22px;padding:18px 20px 20px;
+    transform:translate(-50%,-46%);opacity:0;pointer-events:none;transition:transform .2s,opacity .2s;max-height:85vh}
+  .sheet.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  .sheet .grab{display:none}
+  .row:hover,.quick button:hover,.big:hover,.ib:hover,.tool:hover{filter:brightness(1.15)}
+  .ib:hover{background:var(--panel2)}
+  ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;border:3px solid var(--bg)}
+}
+
 [data-c=red]{--cc:var(--c-red)}[data-c=orange]{--cc:var(--c-orange)}[data-c=yellow]{--cc:var(--c-yellow)}
 [data-c=green]{--cc:var(--c-green)}[data-c=blue]{--cc:var(--c-blue)}[data-c=purple]{--cc:var(--c-purple)}
 </style>
@@ -216,6 +255,13 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
     <div class="when" id="eWhen"></div>
   </div>
 </section>
+
+<div class="placeholder"><div>
+  <img src="/icon-v8-180.png" alt="">
+  <p>Оберіть нотатку зліва або створіть нову</p>
+  <button class="btn main" id="phNew">+ Нова нотатка</button>
+  <div class="kbd"><b>N</b> нова · <b>/</b> пошук · <b>Esc</b> закрити</div>
+</div></div>
 
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet"></div>
@@ -363,7 +409,7 @@ function card(n) {
   const checks = n.body.match(/^\s*[☐☑]/gm) || [];
   const done = (n.body.match(/^\s*☑/gm) || []).length;
   const rl = remindLabel(n);
-  return `<article class="card" data-id="${n.id}"${n.color ? ` data-c="${n.color}"` : ''}>
+  return `<article class="card${n.id === editId ? ' active' : ''}" data-id="${n.id}"${n.color ? ` data-c="${n.color}"` : ''}>
     ${n.title.trim() ? `<h3>${hl(n.title)}</h3>` : ''}
     ${p.html ? `<div class="body">${p.html}</div>` : ''}
     ${p.more ? `<div class="more">+ ще ${p.more} ${plural(p.more, 'рядок', 'рядки', 'рядків')}</div>` : ''}
@@ -405,7 +451,7 @@ function renderChips() {
 }
 
 function render() {
-  let notes = alive();
+  let notes = alive().filter(n => !(isNew && n.id === editId && isEmpty(n)));
   $('#count').textContent = notes.length ? `${notes.length} ${plural(notes.length, 'нотатка', 'нотатки', 'нотаток')}` : '';
   if (!['all', 'pinned', 'lists', 'remind'].includes(filter) && !notes.some(n => n.color === filter)) filter = 'all';
   if (filter === 'remind' && !notes.some(n => n.remind)) filter = 'all';
@@ -478,7 +524,11 @@ function paintEditor(n) {
   $('#eWhen').textContent = rl ? '🔔 ' + rl.text : isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
 }
 
+const desk = matchMedia('(min-width: 900px)');
+
 function openEditor(id, preset) {
+  if (id && id === editId) return;
+  if (editId) closeEditor(true);   // на комп'ютері відкрита нотатка змінюється на іншу
   isNew = !id;
   if (!id) {
     id = uid();
@@ -488,7 +538,8 @@ function openEditor(id, preset) {
   fillEditor(data.notes[id]);
   ed.classList.add('open'); ed.setAttribute('aria-hidden', 'false');
   $('#eScroll').scrollTop = 0;
-  if (location.hash !== '#note') history.pushState({ note: 1 }, '', '#note');
+  if (!desk.matches && location.hash !== '#note') history.pushState({ note: 1 }, '', '#note');
+  if (desk.matches) render();
   if (isNew) {     // фокус одразу, у тому самому натисканні, — інакше iPhone не відкриє клавіатуру
     eBody.focus({ preventScroll: true });
     eBody.setSelectionRange(eBody.value.length, eBody.value.length);
@@ -505,6 +556,7 @@ function commit() {
   isNew = false;
   change('note', n);
   paintEditor(data.notes[editId]);
+  if (desk.matches) render();
 }
 
 function closeEditor(fromPop) {
@@ -646,6 +698,19 @@ function removeNote(id, msg) {
   toast(msg, 'Повернути', () => { change('note', { ...data.notes[id], deleted: false }); render() });
 }
 
+$('#phNew').addEventListener('click', () => $('#add').click());
+document.addEventListener('keydown', e => {
+  const typing = /INPUT|TEXTAREA/.test(document.activeElement?.tagName);
+  if (e.key === 'Escape') {
+    if ($('#sheet').classList.contains('show')) closeSheet();
+    else if (editId) closeEditor(false);
+    else if (typing) document.activeElement.blur();
+    return;
+  }
+  if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '/') { e.preventDefault(); $('#q').focus() }
+  else if (e.key === 'n' || e.key === 'т') { e.preventDefault(); $('#add').click() }
+});
 $('#add').addEventListener('click', () => {
   openSheet(`<div class="grab"></div><h2>Створити</h2><div class="pick">
     <button class="big" data-new="note"><svg class="icon"><use href="#i-note"/></svg>Нотатка<small>Звичайний текст</small></button>
@@ -802,8 +867,9 @@ function settingsSheet() {
     ${deleted.length ? `<h4>Нещодавно видалені</h4>${deleted.slice(0, 15).map(n => `<button class="row" data-restore="${n.id}"><svg class="icon"><use href="#i-restore"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.title.trim() || n.body.trim().split('\n')[0] || 'Без назви')}</span></button>`).join('')}<div class="hint">Видалені зберігаються 30 днів. Натисніть, щоб повернути.</div>` : ''}
     <h4>Сповіщення</h4>
     ${pushCan() && Notification.permission === 'granted'
-      ? '<div class="hint" style="padding-top:0">🔔 Увімкнено на цьому пристрої.</div><button class="row" data-a="push-test"><svg class="icon"><use href="#i-bell"/></svg>Надіслати тестове</button>'
-      : `${pushCan() && Notification.permission !== 'denied' ? '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>Увімкнути сповіщення</button>' : ''}<div class="hint${pushProblem() ? ' warn' : ''}">${pushProblem() || 'Потрібні, щоб приходили нагадування з нотаток.'}</div>`}
+      ? '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>🔔 Увімкнено · оновити</button><button class="row" data-a="push-test"><svg class="icon"><use href="#i-share"/></svg>Надіслати тестове</button>'
+      : '<button class="row" data-a="push-on"><svg class="icon"><use href="#i-bell"/></svg>Увімкнути сповіщення</button>'}
+    <div class="hint" id="pushHint">${pushProblem() || (pushCan() && Notification.permission === 'granted' ? 'Нагадування приходитимуть на цей пристрій.' : 'Потрібні, щоб приходили нагадування з нотаток.')}</div>
     <h4>Дані</h4>
     <button class="row" data-a="export"><svg class="icon"><use href="#i-down"/></svg>Експорт (JSON)</button>
     <button class="row" data-a="import"><svg class="icon"><use href="#i-up"/></svg>Імпорт (JSON)</button>
@@ -815,7 +881,16 @@ function settingsSheet() {
     if (r) { change('note', { ...data.notes[r.dataset.restore], deleted: false }); render(); settingsSheet(); toast('Повернено'); return }
     const a = e.target.closest('[data-a]')?.dataset.a;
     if (a === 'export') exportData();
-    if (a === 'push-on') enablePush().then(ok => { toast(ok ? 'Сповіщення увімкнено' : (pushProblem() || 'Не вдалося увімкнути')); settingsSheet() });
+    if (a === 'push-on') {
+      const hint = $('#pushHint'), prob = pushProblem();
+      if (prob) { hint.className = 'hint warn'; hint.textContent = prob; return }   // пояснюємо, що зробити
+      hint.className = 'hint'; hint.textContent = 'Вмикаю… Якщо телефон спитає — натисніть «Дозволити».';
+      enablePush().then(ok => {
+        if (ok) { toast('Сповіщення увімкнено'); settingsSheet(); return }
+        hint.className = 'hint warn';
+        hint.textContent = pushProblem() || (Notification.permission === 'default' ? 'Дозвіл не надано. Натисніть ще раз і оберіть «Дозволити».' : 'Не вдалося підписатися на сповіщення. Спробуйте ще раз за хвилину.');
+      });
+    }
     if (a === 'push-test') fetch('/api/push/test', { method: 'POST' }).then(r => r.json()).then(d => toast(d.sent ? 'Надіслано — має прийти за кілька секунд' : 'Не знайшов пристроїв зі сповіщеннями')).catch(() => toast('Не вдалося надіслати'));
     if (a === 'import') importData();
   };

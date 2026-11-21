@@ -2,7 +2,9 @@
 // Після входу пристрій отримує cookie на рік.
 
 const COOKIE = 'notes_auth';
-const PUBLIC = new Set(['/manifest.webmanifest', '/icon-v8-180.png', '/icon-v8-512.png', '/favicon.ico', '/sw.js', '/api/push/pending']);
+// іконки й маніфест доступні без пароля, щоб iPhone підтягнув іконку для ярлика на екрані «Додому»
+const PUBLIC = new Set(['/manifest.webmanifest', '/favicon.ico', '/apple-touch-icon.png', '/apple-touch-icon-precomposed.png', '/sw.js', '/api/push/pending']);
+const isPublic = (p) => PUBLIC.has(p) || /^\/icon[^/]*\.png$/.test(p);
 
 async function token(env) {
   const data = new TextEncoder().encode('my-notices:' + env.PASSWORD);
@@ -22,7 +24,7 @@ function getCookie(request, name) {
 // Повертає Response, якщо треба показати вхід, або null, якщо доступ є.
 export async function checkAuth(request, env) {
   const url = new URL(request.url);
-  if (PUBLIC.has(url.pathname)) return null;
+  if (isPublic(url.pathname)) return null;
 
   if (!env.PASSWORD) {
     return page('Пароль ще не задано. Додайте секрет PASSWORD у Cloudflare: Worker → Settings → Variables and Secrets.', false);
@@ -48,7 +50,7 @@ export async function checkAuth(request, env) {
   if (url.pathname.startsWith('/api/')) {
     return new Response(JSON.stringify({ error: 'auth' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
   }
-  return page('', true, 401);
+  return page('', true);
 }
 
 function page(message, form, status = 200) {
@@ -57,7 +59,7 @@ function page(message, form, status = 200) {
 <meta name="theme-color" content="#121316"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Нотатки">
-<link rel="apple-touch-icon" href="/icon-v8-180.png"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-v8-180.png"><link rel="icon" type="image/png" href="/icon-v8-180.png"><link rel="manifest" href="/manifest.webmanifest">
 <title>Нотатки</title><style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#121316;color:#eceef2;font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:24px}
 .box{width:100%;max-width:340px;text-align:center}img{width:84px;height:84px;border-radius:20px}

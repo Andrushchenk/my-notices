@@ -101,6 +101,10 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 .etitle::placeholder,.ebody::placeholder{color:var(--muted)}
 .efoot{display:flex;align-items:center;gap:4px;padding:6px 10px calc(var(--safe-b) + 6px);border-top:1px solid var(--line);background:inherit}
 .editor.kb .efoot{padding-bottom:6px}
+.efoot{gap:8px}
+.efoot .when{text-align:right;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#eRemind.set{background:var(--accent);color:var(--on-accent)}
+@media (max-width:380px){.efoot .when{display:none}}
 .efoot .when{flex:1;text-align:center;font-size:12px;color:var(--muted)}
 .tool{display:flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:14px;font-weight:600;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
 .tool:active{background:var(--panel2)}
@@ -257,6 +261,7 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
   </div>
   <div class="efoot">
     <button class="tool" id="eCheck"><svg class="icon"><use href="#i-check"/></svg>Пункт списку</button>
+    <button class="tool" id="eRemind"><svg class="icon"><use href="#i-bell"/></svg><span id="eRemindText">Нагадати</span></button>
     <div class="when" id="eWhen"></div>
   </div>
 </section>
@@ -526,7 +531,9 @@ function paintEditor(n) {
   $('#ePin').classList.toggle('on', !!n.pinned);
   $('#eBell').classList.toggle('on', !!n.remind);
   const rl = remindLabel(n);
-  $('#eWhen').textContent = rl ? '🔔 ' + rl.text : isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
+  $('#eRemindText').textContent = rl ? rl.text : 'Нагадати';
+  $('#eRemind').classList.toggle('set', !!rl);
+  $('#eWhen').textContent = isNew && isEmpty(n) ? '' : 'Змінено ' + fmtDate(n.updated);
 }
 
 const desk = matchMedia('(min-width: 900px)');
@@ -720,11 +727,13 @@ $('#add').addEventListener('click', () => {
   openSheet(`<div class="grab"></div><h2>Створити</h2><div class="pick">
     <button class="big" data-new="note"><svg class="icon"><use href="#i-note"/></svg>Нотатка<small>Звичайний текст</small></button>
     <button class="big" data-new="list"><svg class="icon"><use href="#i-list"/></svg>Список<small>Пункти з галочками</small></button>
-  </div><div class="hint">Нагадування можна додати в будь-яку нотатку — дзвіночок угорі.</div>`);
+    <button class="big" data-new="remind" style="grid-column:1/-1;flex-direction:row;align-items:center"><svg class="icon"><use href="#i-bell"/></svg><span>Нагадування<br><small style="margin:0">Нотатка зі сповіщенням у потрібний час</small></span></button>
+  </div><div class="hint">Нагадування можна додати в будь-яку нотатку — кнопка «Нагадати» внизу.</div>`);
   $('#sheet').onclick = e => {
     const b = e.target.closest('[data-new]'); if (!b) return;
     closeSheet();
     openEditor(null, b.dataset.new === 'list' ? { body: BOX + ' ' } : undefined);
+    if (b.dataset.new === 'remind') $('#eBell').click();
   };
 });
 
@@ -776,6 +785,8 @@ function quickTimes() {
   return list;
 }
 
+$('#eRemind').addEventListener('pointerdown', e => e.preventDefault());
+$('#eRemind').addEventListener('click', () => $('#eBell').click());
 $('#eBell').addEventListener('click', () => {
   commit();
   const n = data.notes[editId];
@@ -880,7 +891,7 @@ function settingsSheet() {
     <button class="row" data-a="import"><svg class="icon"><use href="#i-up"/></svg>Імпорт (JSON)</button>
     <div class="hint">Нотатки зберігаються на сервері й однакові на всіх пристроях, де ви увійшли. Без інтернету зміни чекають на телефоні.</div>`);
   $('#sheet').onclick = e => {
-    const th = e.target.closest('[data-theme]');
+    const th = e.target.closest('.th');
     if (th) { change('settings', { ...data.settings, theme: th.dataset.theme }); applyTheme(); settingsSheet(); return }
     const r = e.target.closest('[data-restore]');
     if (r) { change('note', { ...data.notes[r.dataset.restore], deleted: false }); render(); settingsSheet(); toast('Повернено'); return }

@@ -5,7 +5,7 @@ import { vapid, loadSubs, notify, remindNotes } from './push.js';
 // Нотатка: { id, title, body, pinned, color, remind, repeat, deleted, created, updated }
 // remind — мітка часу нагадування (мс, 0 = без сповіщення), repeat — '' | 'day' | 'week'
 const KEY = 'notes';
-const THEMES = ['graphite', 'racing', 'red', 'navy', 'purple', 'light'];
+const THEMES = ['graphite', 'racing', 'red', 'navy', 'purple', 'light', 'mono'];
 const COLORS = ['', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 const DAY = 86400000;
 const REPEATS = ['', 'day', 'week'];

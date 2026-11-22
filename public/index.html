@@ -22,6 +22,7 @@
   --safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom);
 }
 [data-theme=racing]{--bg:#0d1a14;--panel:#13241c;--panel2:#1a3026;--ink:#eef3ee;--muted:#8fa597;--line:#24392e;--accent:#d4af37;--on-accent:#1a1400}
+[data-theme=mono]{--bg:#0b0b0b;--panel:#161616;--panel2:#202020;--ink:#ededed;--muted:#9a9a9a;--line:#2c2c2c;--accent:#e8e8e8;--on-accent:#111111}
 [data-theme=red]{--bg:#0e0b0b;--panel:#1a1314;--panel2:#241a1b;--ink:#f3eceb;--muted:#a08e8e;--line:#33292a;--accent:#e0313f;--on-accent:#fff}
 [data-theme=navy]{--bg:#0b1220;--panel:#121b2e;--panel2:#18243b;--ink:#e8eef8;--muted:#8a98b3;--line:#22304a;--accent:#4f8cff;--on-accent:#fff}
 [data-theme=purple]{--bg:#120f1c;--panel:#1b1729;--panel2:#241f36;--ink:#efeaf8;--muted:#9a90b3;--line:#2e2843;--accent:#a678ff;--on-accent:#fff}
@@ -290,8 +291,9 @@ const THEMES = [
   ['navy', 'Нічна синя', '#121b2e', '#4f8cff'],
   ['purple', 'Фіолетова', '#1b1729', '#a678ff'],
   ['light', 'Світла', '#ffffff', '#f2b705'],
+  ['mono', 'Чорно-біла', '#161616', '#e8e8e8'],
 ];
-const BG = { graphite: '#121316', racing: '#0d1a14', red: '#0e0b0b', navy: '#0b1220', purple: '#120f1c', light: '#f4f4f1' };
+const BG = { graphite: '#121316', racing: '#0d1a14', red: '#0e0b0b', navy: '#0b1220', purple: '#120f1c', light: '#f4f4f1', mono: '#0b0b0b' };
 
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch (e) { return d } },

@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Нотатки">
 <link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" type="image/png" href="/icon-v8-180.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icon-v8-180.png">
+<link rel="icon" type="image/png" href="/icon-v9-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon-v9-180.png">
 <title>Нотатки</title>
 <script>try{const t=JSON.parse(localStorage.getItem('my-notices-data')||'{}').settings?.theme;if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
@@ -231,7 +231,7 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 
 <header>
   <div class="top">
-    <img class="logo" src="/icon-v8-180.png" alt="">
+    <img class="logo" src="/icon-v9-180.png" alt="">
     <h1>Нотатки<small id="count"></small></h1>
     <button class="round" id="gear" aria-label="Налаштування"><svg class="icon"><use href="#i-gear"/></svg></button>
   </div>
@@ -268,7 +268,7 @@ mark{background:color-mix(in srgb,var(--accent) 45%,transparent);color:inherit;b
 </section>
 
 <div class="placeholder"><div>
-  <img src="/icon-v8-180.png" alt="">
+  <img src="/icon-v9-180.png" alt="">
   <p>Оберіть нотатку зліва або створіть нову</p>
   <button class="btn main" id="phNew">+ Нова нотатка</button>
   <div class="kbd"><b>N</b> нова · <b>/</b> пошук · <b>Esc</b> закрити</div>
@@ -480,7 +480,7 @@ function render() {
   const pinned = notes.filter(n => n.pinned), rest = notes.filter(n => !n.pinned);
   let html = '';
   if (!notes.length) {
-    html = `<div class="empty"><img src="/icon-v8-180.png" alt=""><p>${query ? 'Нічого не знайдено' : alive().length ? 'Тут поки порожньо' : 'Ще немає нотаток.<br>Натисніть «+», щоб записати першу.'}</p></div>`;
+    html = `<div class="empty"><img src="/icon-v9-180.png" alt=""><p>${query ? 'Нічого не знайдено' : alive().length ? 'Тут поки порожньо' : 'Ще немає нотаток.<br>Натисніть «+», щоб записати першу.'}</p></div>`;
   } else if (pinned.length && rest.length) {
     html = `<div class="sec">Закріплені</div><div class="grid">${pinned.map(card).join('')}</div><div class="sec">Інші</div><div class="grid">${rest.map(card).join('')}</div>`;
   } else {

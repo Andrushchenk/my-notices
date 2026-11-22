@@ -16,8 +16,8 @@ self.addEventListener('push', (e) => {
       await self.registration.showNotification(it.title || 'Нагадування', {
         body: it.body || '',
         tag: it.id,
-        icon: '/icon-v8-180.png',
-        badge: '/icon-v8-180.png',
+        icon: '/icon-v9-180.png',
+        badge: '/icon-v9-180.png',
         data: { id: it.id },
       });
     }
